@@ -1,4 +1,4 @@
-if (!(window.innerWidth/window.innerHeight === 1440/732)) {
+if (!(window.innerWidth/window.innerHeight === 1440/732)) { //ily nas <3
     var wc = document.getElementById("EverythingFitter")
     if (window.innerWidth < 1440) {
         wc.style.width = window.innerWidth
@@ -819,7 +819,7 @@ function StartGame() {
     zhealtharray = [];
     zhealthbararray = [];
     currentPlant.coords = [2,2];
-    difficultylevel = 1;
+    difficultylevel = 1; 
     StopTurn = false;
     planthealth.innerHTML = Object.assign(currentPlant.permhealth);
     currentPlant.health = Object.assign(currentPlant.permhealth);
@@ -1073,12 +1073,18 @@ function DoDamage(zombie, damageprojectile,poses=[]) {
             zombiehit = true;
             if (currentPlant.name == "Trebhum") { 
                 currentPlant.health += Math.round(zombie.health/2)
-                currentPlant.attacks = currentPlant.attacks.filter(function(x) {
-                    return x.desc !== "";
-                });
+
                 for (a in zombie.attacks) {
                     attack = zombie.attacks[a];
-                    currentPlant.attacks.push(zombie.attacks[a])
+                    currentPlant.attacks.push(attack);
+                    for (pAttack in currentPlant.attacks) {
+                    		if (currentPlant.attacks[parseInt(pAttack)+1] == null) {
+                    			break;
+                    		}
+                    		if (currentPlant.attacks[pAttack].name == attack.name) {
+                    			currentPlant.attacks.pop();
+                    		}
+                    }
                 }
             }
             UpdateTurnCount();
@@ -1988,13 +1994,15 @@ function CheckForLoss() {
         loss.play();
         return true;
     }
-    else if (currentPlant.health <= currentPlant.permhealth/3 && !(CriticalStage) && !(IsBossWave)) { 
+    else if (currentPlant.health <= currentPlant.permhealth/3 && !(CriticalStage)) {
         CriticalStage = true; 
         UpdatePassivePerks("criticalphase");
         hi.src = "HealthIcon3.PNG";
-        CriticalTheme.sound.currentTime = ZombieTurnTheme.sound.currentTime;
-        MusicFade(ZombieTurnTheme, CriticalTheme);
-        SoundArray.push(CriticalTheme);
+        if (!IsBossWave) {
+            CriticalTheme.sound.currentTime = ZombieTurnTheme.sound.currentTime;
+            MusicFade(ZombieTurnTheme, CriticalTheme);
+            SoundArray.push(CriticalTheme);
+        }
     }
     return false;
 }
@@ -3056,8 +3064,8 @@ passivePerks.push(LessAccuracy);
 BumpAttack = new PassivePerk();
 BumpAttack.name = "Bump Attack";
 BumpAttack.desc = "Deal damage to enemies by trying to move onto their tile. (This will consume a movement turn)";
-BumpAttack.levelstats = ["Damage: 25","Damage: 35","Damage: 50"]
-BumpAttack.values = [25,35,50];
+BumpAttack.levelstats = ["Damage: 25","Damage: 50","Damage: 100"]
+BumpAttack.values = [25,50,100];
 BumpAttack.updaterate = "everymove";
 BumpAttack.type = "damage";
 BumpAttack.sprite = "BumpAttack.PNG"
@@ -3311,15 +3319,15 @@ JadeCac.iconSprite = "JadeRight.PNG";
 //dlc
 TrebhumInhale = new AttackType();
 TrebhumInhale.name = "Trunk Suck"; 
-TrebhumInhale.desc = "your Trebhum sucks up a zombie with their trunk, gaining the zombie's abilities.";
+TrebhumInhale.desc = "your Trebhum sucks up a zombie with their trunk, gaining the zombie's abilities as well as some of their health.";
 TrebhumInhale.range = 1;
 TrebhumInhale.reloadTime = 3;
 TrebhumInhale.displaySprite = "TrebhumInhale.PNG";
 Trebhum = new Fighter();
 Trebhum.plant = true;
 Trebhum.name = "Trebhum";
-Trebhum.health = 150;
-Trebhum.permhealth = 150;
+Trebhum.health = 200;
+Trebhum.permhealth = 200;
 Trebhum.powerLevel = 9001;
 Trebhum.height = "18%";
 Trebhum.chewingtime = 0;
@@ -3650,7 +3658,7 @@ FireBelch.damage = 75;
 FireBelch.range = 2;
 FireBelch.effectChance = 33;
 FireBelch.effectType = "fire";
-FireBelch.effectDamage = 15;
+FireBelch.effectDamage = 25;
 FireBelch.effectDuration = 2;
 FireBelch.directEffectDuration = 2;
 FireBelch.displaySprite = "FireChomperIcon.PNG";
@@ -3658,9 +3666,9 @@ FireChomp = new CharOrAbilityPerk();
 FireChomp.name = "Flame Belch";
 FireChomp.desc = "(Only usable by Armor Chomper) Switches your current primary to Flame Belch. Flame Belch has extra range, and has a chance to light Zombies on fire, dealing damage to them at the start of their turns.";
 FireChomp.newdescs = [["Armor Chomper sprays fire out of his mouth, melting the zombies while not melting his stainless steel suit. <br>Dmg: 75 ∫ Fire Dmg: 20 ∫ Burn Duration: 2 turns ∫ Burn Chance: 33% ∫ Range: 2 spaces ∫ No cooldown",
-"Armor Chomper sprays fire out of his mouth, melting the zombies while not melting his stainless steel suit. <br>Dmg: 75 ∫ Fire Dmg: 20 ∫ Burn Duration: 2 turns ∫ Burn Chance: 33% ∫ Pierces through Zombies ∫ Range: 2 spaces ∫ No cooldown",
-"Armor Chomper sprays fire out of his mouth, melting the zombies while not melting his stainless steel suit. <br>Dmg: 75 ∫ Fire Dmg: 20 ∫ Burn Duration: 2 turns ∫ Burn Chance: 75% ∫ Pierces through Zombies ∫ Range: 2 spaces ∫ No cooldown"]];
-FireChomp.levelstats = ["(Belch Range: 2 tiles) (Belch damage: 75, Burn damage: 15) (Burn Duration: 2 turns) (Burn Chance: 33%)","Belch now pierces, hitting all zombies in range.","Burn Chance increased to 75%"];
+"Armor Chomper sprays fire out of his mouth, melting the zombies while not melting his stainless steel suit. <br>Dmg: 75 ∫ Fire Dmg: 25 ∫ Burn Duration: 2 turns ∫ Burn Chance: 33% ∫ Pierces through Zombies ∫ Range: 2 spaces ∫ No cooldown",
+"Armor Chomper sprays fire out of his mouth, melting the zombies while not melting his stainless steel suit. <br>Dmg: 75 ∫ Fire Dmg: 25 ∫ Burn Duration: 2 turns ∫ Burn Chance: 75% ∫ Pierces through Zombies ∫ Range: 2 spaces ∫ No cooldown"]];
+FireChomp.levelstats = ["(Belch Range: 2 tiles) (Belch damage: 75, Burn damage: 25) (Burn Duration: 2 turns) (Burn Chance: 33%)","Belch now pierces, hitting all zombies in range.","Burn Chance increased to 75%"];
 FireChomp.values = [false,true,true]; 
 FireChomp.values2 = [33,33,75];
 FireChomp.newabilities = [FireBelch,Swallow];
@@ -4278,7 +4286,7 @@ YetiWave.zombies = [Yeti,YetiImp,SwagYeti,clone(YetiImp)];
 YetiWave.image = "Swaeg.PNG";   
 YetiWave.imageWidth = "35%";
 YetiWave.imageLeft = "65%";
-YetiWave.availablewaves = [15,20,25,30,35,40,45,50]; /*expand this and other boss waves*/
+YetiWave.availablewaves = [15,20,25,30,35,40,45,50];
 for (x=4; x<10; x++) {
     for (y=0; y<4; y++) {
         YetiWave.availablecoords.push([x,y]);
@@ -4407,6 +4415,7 @@ BossWaves.push(ConeZone);
 makeEntry(JadeCac,"Jade Cactus is a long range character, capable of killing zombies from anywhere on the board. However, she doesn't have very many options for when she gets into sticky situations.","Forged from the fires deep inside the earth over millions of years, the largest deposit of the greenest jade is formed. Extracted from the depths many years ago, and formed into a mystical green statue to guard an empire. Over time, this stoic artefact got buried and left to stay forever untouched by the living world again. But Jade Cactus’ determination lived on. She promised herself she would protect the people in a time of need, just like what she did before her fall. In an alternate universe Jade Cactus never woke up, but luckily we ended up in a universe where she does awaken and helps save us from the zombies. Thank goodness!") 
 makeEntry(Peashoot,"Rock Pea is a versatile character, capable of dealing with zombies at close range and long range. He doesn't have nearly as much health as his buddy Armor Chomper though.","Rock Pea can't shake the feeling that in a past life, he was someone else. Someone... different, yet very similar. Their last name was Fern. Rock Pea shudders at these thoughts, before blasting an imp into pieces.") 
 makeEntry(AC,"Armor Chomper is the main character of this game, and he's great at brawling with zombies and soaking up hits. He can goop up the zombies so they can't do anything, and then eat them as a snack.","Chompers all around the world are known for their immense hunger in Zombie flesh (and feet), but Armor Chomper holds a dark secret. He's not like other Chompers. He likes Cheese Balls. He buys them in the extra large containers and spends his free time licking the inside of them clean of any cheese dust. Can you really blame him?")
+makeEntry(Trebhum,"Trebhum from The Enternal Cylinder","why does armor chomper's almanac description says he likes feet was I seriously projecting myself into armor chomper 2 years ago")
 makeEntry(Browncoat,"The simplest of Zombies, Browncoat Zombie shuffles towards the player and bites them.","Browncoat is the most expendable unit in the Zombie army, and he knows it. He's darn proud of it too. He knows there's strength in numbers, and since he can count to 6, he has to also be the strongest unit.") 
 makeEntry(Conehead,"Conehead Zombie is very similar to Browncoat Zombie, except he has a cone that gives him more health.","You wouldn't know it just by looking at it, but he made that cone by himself. He stole a garden hose for the rubber, and got the orange paint by mixing red and yellow. It's a shame they're also made en masse in Z-Tech factories, where he is a worker, and used the exact process just described. At least he feels special.") 
 makeEntry(Buckethead,"Buckethead Zombie is evolutionarily the next step up from Conehead Zombie, having even more health.","Buckethead has quite a large following on social media, and recently hosted a QnA with fans of his. The most popular question seemed to be \"What\'s the red stuff on the Bucket? Blood or Paint?\", to which he responded \"Grrbrrblarblrg. Grahrahrablr.\" I don\'t speak Zombie, so I can\'t tell you what he really said.") 
@@ -4563,7 +4572,7 @@ function updategrid() {
                 newgi.character = fighter;
                 fighterPhysArray[f].style.height = currentPlant.height;
                 fighterPhysArray[f].style.top = (parseInt(ItemSprite.style.top)-0.088*fighterPhysArray[f].height).toString()+"%";
-                fighterPhysArray[f].style.left = (parseInt(ItemSprite.style.left)+0.4*fighterPhysArray[f].width).toString()+"px";
+                fighterPhysArray[f].style.left = (parseInt(ItemSprite.style.left)+0.4*fighterPhysArray[f].width).toString()+"px"; 
                 ItemSprite.src = "GreenTile.PNG";
             }
             else if (currentx === fighter.coords[0] && currenty === fighter.coords[1] && !(fighter.plant)) {
