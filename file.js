@@ -1072,10 +1072,33 @@ function DoDamage(zombie, damageprojectile,poses=[]) {
             zombiedead = true;
             zombiehit = true;
             if (currentPlant.name == "Trebhum") { 
-                currentPlant.health += Math.round(zombie.health/2)
+                currentPlant.health += Math.round(zombie.health/2);
 
                 for (a in zombie.attacks) {
                     attack = zombie.attacks[a];
+                    attack.desc = "Dmg: "+attack.damage+" Range: "+attack.range;
+                    if (attack.accuracy < 101) {
+                    		attack.desc += " Accuracy: "+attack.accuracy;
+                    }
+                    if (attack.shots > 1) {
+                    		attack.desc += " Shots: "+attack.shots;
+                    }
+                    if (attack.effectChance > 0) {
+                    		attack.desc += " Effect: "
+                    }
+                    if (0 < attack.effectChance && attack.effectChance < 101) {
+                    		attack.desc += attack.effectChance;
+                    }
+                    if (attack.effectType != "") {
+                    		attack.desc += " "+attack.effectType;
+                    }
+                    if (attack.reloadTime == 1) {
+                    	attack.desc += " Reload: can be used once per turn";
+                    }
+                    else if (attack.reloadTime > 1) {
+                    	attack.desc += " Reload: "+attack.reloadTime+" turns";
+                    }
+                    
                     currentPlant.attacks.push(attack);
                     for (pAttack in currentPlant.attacks) {
                     		if (currentPlant.attacks[parseInt(pAttack)+1] == null) {
