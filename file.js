@@ -1078,9 +1078,14 @@ function DoDamage(zombie, damageprojectile,poses=[]) {
             zombiehit = true;
             if (currentPlant.name == "Trebhum") { 
                 currentPlant.health += Math.round(zombie.health/2);
+                
+                for (s in zombie.supports) {
+                	currentPlant.attacks.push(zombie.supports[s]);
+                }
 
                 for (a in zombie.attacks) {
-                    attack = zombie.attacks[a];
+                   attack = zombie.attacks[a];
+                   if (attack.desc == "") {
                     attack.desc = "Dmg: "+attack.damage+" Range: "+attack.range;
                     if (attack.reloadTime >= 0) {
                     	    attack.reloadTime -= 1;
@@ -1106,6 +1111,7 @@ function DoDamage(zombie, damageprojectile,poses=[]) {
                     else if (attack.reloadTime > 0) {
                     	attack.desc += " Reload: "+attack.reloadTime+" turns";
                     }
+                   } 
                     
                     currentPlant.attacks.push(attack);
                     for (pAttack in currentPlant.attacks) {
@@ -1230,6 +1236,66 @@ function FireSupport(support) {
         currentProjectile.TimeUntilReady = currentProjectile.reloadTime+1; 
         currentPlant.dmgmult *= currentProjectile.dmgmultincrease;
         MovesLeft += currentProjectile.movementincrease;
+        if (support.type == "summon") {
+        	updatecharactergrid();
+        	for (g in griditemarray) {
+            	for (s in support.coords) {
+                   if (griditemarray[g].codx == currentPlant.coords[0]+support.coords[s][0] && griditemarray[g].cody == currentPlant.coords[1]+support.coords[s][1] && griditemarray[g].character == "") {
+    				if (support.zombie[0] == "Parent") {
+                        NZ = clone(currentPlant);
+                    }
+                    else {
+                        NZ = clone(support.zombie[Math.floor(Math.random() * support.zombie.length)]);
+                    }
+                    NZ.health = NZ.permhealth;
+                    NZ.plant = false;
+                    NZ.coords = [currentPlant.coords[0]+support.coords[s][0],currentPlant.coords[1]+support.coords[s][1]];
+                    ZombieArray.push(NZ);
+                    for (a in NZ.attacks) {
+                        NZ.attacks[a].TimeUntilReady = NZ.attacks[a].STUP+1;
+                    }
+                    for (sup in NZ.supports) {
+                        NZ.supports[sup].TimeUntilReady = NZ.supports[sup].STUP+1;
+                    }
+                    prevzposes.push(NZ.coords)
+                    CanZAbility.push(true);
+                    var zombi = document.createElement("img");
+                    zombi.className = "Fighter";
+                    zombi.style.height = NZ.height;
+                    zombi.src = NZ.aliveSprite;
+                    wc.appendChild(zombi);
+                    fighterPhysArray.push(zombi);
+                    zombi.style.transform = "scaleX(1)";
+                    var zhealth = document.createElement("p")
+                    var zhealthbar = document.createElement("img")
+                    if (NZ.underShield != "") {
+                        zhealthbar.src = "ArmorHeartIcon.PNG";
+                    }
+                    else {
+                        zhealthbar.src = "HeartIcon.PNG";
+                    }
+                    zhealthbar.style.position = "absolute";
+                    zhealthbar.style.width = "4%";
+                    zhealthbar.style.zIndex = 9001;
+                    wc.appendChild(zhealthbar);
+                    zhealth.style.position = "absolute";
+                    zhealth.style.fontFamily =  'Marker Felt';
+                    zhealth.style.fontSize = "1.7vw";
+                    zhealth.style.zIndex = 9002;
+                    wc.appendChild(zhealth)
+                    zhealtharray.push(zhealth);
+                    zhealthbararray.push(zhealthbar);
+                    fighterArray.push(NZ);
+                    griditemarray[g].character = NZ;
+                    CheckZindexes();
+                    
+                    //if (support.zombie[0] == "Parent") {
+                    //    currentPlant = NZ;
+                    //}
+                   }
+                 }
+             }
+        }            
         currentPlant.currentSupports.push(support);
         if (CanAbility[0]) {
             CanAbility[0] = false;
@@ -1726,8 +1792,15 @@ function ResetGame() {
     else {
         ZTS = [];
         CPL = 0;
-        ZombieArray = [Browncoat, Conehead, Imp, Buckethead, Yeti, GunZomb, FootballZomb, Screendoor, Newspaper, Disco]; 
-        //ZombieArray = [GunZomb, Browncoat];
+        //ZombieArray = [Browncoat, Conehead, Imp, Buckethead, Yeti, GunZomb, FootballZomb, Screendoor, Newspaper, Disco]; 
+        ZombieArray = [AC, Peashoot, JadeCac, Browncoat];
+        AC.plant = false;
+        Peashoot.plant = false;
+        JadeCac.plant = false;
+        AC.powerLevel = 4;
+        Peashoot.powerLevel = 3;
+        JadeCac.powerLevel = 2;
+        JadeCac.attacks.push(Mitosis);
         availablecoords = [];
         for (x=4; x<10; x++) {
             for (y=0; y<5; y++) {
@@ -3266,7 +3339,7 @@ AC.plant = true;
 AC.name = "Armor Chomper";
 AC.health = 225;
 AC.permhealth = 225;
-AC.powerLevel = 9001;
+AC.powerLevel = 2;
 AC.height = "30%";
 AC.chewingtime = 0;
 AC.attacks.push(Chomp,Swallow,Goop,Seed); 
@@ -3302,7 +3375,7 @@ Peashoot.plant = true;
 Peashoot.name = "Rock Pea";
 Peashoot.health = 150;
 Peashoot.permhealth = 150;
-Peashoot.powerLevel = 9001;
+Peashoot.powerLevel = 2;
 Peashoot.height = "26%";
 Peashoot.chewingtime = 0;
 Peashoot.attacks.push(Pea,Gatling,Bean); 
@@ -3347,7 +3420,7 @@ JadeCac.plant = true;
 JadeCac.name = "Jade Cactus";
 JadeCac.health = 150;
 JadeCac.permhealth = 150;
-JadeCac.powerLevel = 9001;
+JadeCac.powerLevel = 2;
 JadeCac.height = "30%";
 JadeCac.chewingtime = 0;
 JadeCac.attacks.push(Shatter,Precision,Corn); 
@@ -3366,14 +3439,15 @@ Trebhum.plant = true;
 Trebhum.name = "Trebhum";
 Trebhum.health = 200;
 Trebhum.permhealth = 200;
-Trebhum.powerLevel = 9001;
+Trebhum.powerLevel = 2;
 Trebhum.height = "18%";
 Trebhum.chewingtime = 0;
 Trebhum.attacks.push(TrebhumInhale); 
 Trebhum.aliveSprite = "Trebhum.PNG";
 Trebhum.iconSprite = "TrebhumIcon.PNG";
 currentPlant = AC;
-plantArray = [AC,Peashoot,JadeCac];
+//plantArray = [AC,Peashoot,JadeCac];
+plantArray = [Trebhum];
 
 class CharOrAbilityPerk {
     constructor() {
