@@ -3443,6 +3443,7 @@ Trebhum.powerLevel = 2;
 Trebhum.height = "18%";
 Trebhum.chewingtime = 0;
 Trebhum.attacks.push(TrebhumInhale); 
+Trebhum.primaries = [TrebhumInhale];
 Trebhum.aliveSprite = "Trebhum.PNG";
 Trebhum.iconSprite = "TrebhumIcon.PNG";
 currentPlant = AC;
