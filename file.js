@@ -659,7 +659,12 @@ function LoadAttackButtons() {
                 }]]);
             }
             else {
-                CreateModal((attack.name+"Info"),attack.name,attack.desc,attack.displaySprite,[["Use",FireProjectile],["Rotate Attack",SwitchAD]]);
+            	if (currentPlant.name == "Trebhum" && attack.name != "Trunk Suck") {
+            		CreateModal((attack.name+"Info"),attack.name,attack.desc,attack.displaySprite,[["Use",FireProjectile],["Rotate Attack",SwitchAD],["Delete Attack",DeleteAttack]]);
+            	}
+            	else {
+                	CreateModal((attack.name+"Info"),attack.name,attack.desc,attack.displaySprite,[["Use",FireProjectile],["Rotate Attack",SwitchAD]]);
+                }
                 for (is in phygriditems) {
                     phygriditems[is].remove();
                 }
@@ -1077,8 +1082,11 @@ function DoDamage(zombie, damageprojectile,poses=[]) {
                 for (a in zombie.attacks) {
                     attack = zombie.attacks[a];
                     attack.desc = "Dmg: "+attack.damage+" Range: "+attack.range;
+                    if (attack.reloadTime >= 0) {
+                    	    attack.reloadTime -= 1;
+                    }
                     if (attack.accuracy < 101) {
-                    		attack.desc += " Accuracy: "+attack.accuracy;
+                    		attack.desc += " Accuracy: "+attack.accuracy+"%";
                     }
                     if (attack.shots > 1) {
                     		attack.desc += " Shots: "+attack.shots;
@@ -1087,15 +1095,15 @@ function DoDamage(zombie, damageprojectile,poses=[]) {
                     		attack.desc += " Effect: "
                     }
                     if (0 < attack.effectChance && attack.effectChance < 101) {
-                    		attack.desc += attack.effectChance;
+                    		attack.desc += attack.effectChance+"% ";
                     }
                     if (attack.effectType != "") {
-                    		attack.desc += " "+attack.effectType;
+                    		attack.desc += attack.effectType;
                     }
-                    if (attack.reloadTime == 1) {
+                    if (attack.reloadTime == 0) {
                     	attack.desc += " Reload: can be used once per turn";
                     }
-                    else if (attack.reloadTime > 1) {
+                    else if (attack.reloadTime > 0) {
                     	attack.desc += " Reload: "+attack.reloadTime+" turns";
                     }
                     
@@ -1110,7 +1118,7 @@ function DoDamage(zombie, damageprojectile,poses=[]) {
                     }
                 }
             }
-            UpdateTurnCount();
+            //UpdateTurnCount();
             CreateConsoleText(currentPlant.name+" has ate "+zombie.name+".");
             currentPlant.chewing = true;
             currentPlant.chewingtime = zombie.chewingtime+1;
@@ -1233,6 +1241,13 @@ function FireSupport(support) {
         UpdateTurnCount();
     }
     SpecialButton.click();    
+}
+function DeleteAttack() {
+    index = currentPlant.attacks.indexOf(currentProjectile);
+    currentPlant.attacks.splice(index, 1);
+    SpecialButton.click();
+    SaveGame();
+    LoadGame();
 }
 function FireProjectile() {  
     willhit = false;
