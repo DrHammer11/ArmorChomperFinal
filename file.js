@@ -1800,7 +1800,6 @@ function ResetGame() {
         AC.powerLevel = 4;
         Peashoot.powerLevel = 3;
         JadeCac.powerLevel = 2;
-        JadeCac.attacks.push(Mitosis);
         availablecoords = [];
         for (x=4; x<10; x++) {
             for (y=0; y<5; y++) {
@@ -4102,6 +4101,7 @@ Mitosis.coords = [[0,1]];
 Mitosis.reloadTime = 3;
 Mitosis.STUP = 2;
 Mitosis.zombie = ["Parent"];
+Trebhum.attacks.push(Mitosis);
 Mitosis2 = new SupportType();
 Mitosis2.type = "summon";
 Mitosis2.name = "Mitosis";
